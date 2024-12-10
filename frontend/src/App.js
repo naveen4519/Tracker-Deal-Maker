@@ -6,20 +6,51 @@ import Food from './components/Food';
 import Travel from './components/Travel';
 
 function App() {
-  const [totalSpent, setTotalSpent] = useState(0);
+  const [purchases, setPurchases] = useState([]);
 
-  const handleBuy = (price) => {
-    setTotalSpent(totalSpent + price); // Update the total spent
+  const addPurchase = (category, item) => {
+    const newPurchase = {
+      id: Date.now(),
+      category,
+      name: category === 'travel' ? item.location : item.name,
+      price: item.price,
+      timestamp: new Date()
+    };
+
+    setPurchases(prevPurchases => [...prevPurchases, newPurchase]);
   };
 
   return (
     <Router>
       <Routes>
-        {/* Pass the handleBuy function to Movies */}
-        <Route path="/" element={<Dashboard totalSpent={totalSpent} />} />
-        <Route path="/movies" element={<Movies onBuy={handleBuy} />} />
-        <Route path="/food" element={<Food onBuy={handleBuy} />} />
-        <Route path="/travel" element={<Travel onBuy={handleBuy} />} />
+        <Route
+          path="/"
+          element={<Dashboard purchases={purchases} />}
+        />
+        <Route
+          path="/movies"
+          element={
+            <Movies
+              onBuy={(movie) => addPurchase('movies', movie)}
+            />
+          }
+        />
+        <Route
+          path="/food"
+          element={
+            <Food
+              onBuy={(food) => addPurchase('food', food)}
+            />
+          }
+        />
+        <Route
+          path="/travel"
+          element={
+            <Travel
+              onBuy={(travel) => addPurchase('travel', travel)}
+            />
+          }
+        />
       </Routes>
     </Router>
   );
