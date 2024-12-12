@@ -7,6 +7,8 @@ const cors = require('cors');
 const moviesRoute = require('./routes/movies');
 const foodRoute = require('./routes/food');
 const travelRoute = require('./routes/travel');
+const groceriesRoute = require('./routes/groceries');
+const clothesRoute = require('./routes/clothes');
 
 // Create Express App
 const app = express();
@@ -30,6 +32,8 @@ mongoose.connect('mongodb+srv://naveen:Sumanth123@cluster0.2k7qtkf.mongodb.net/e
 app.use('/movies', moviesRoute);
 app.use('/foods', foodRoute);
 app.use('/travels', travelRoute);
+app.use('/groceries', groceriesRoute);
+app.use('/clothes', clothesRoute);
 
 // Start the Server
 const PORT = 5000;

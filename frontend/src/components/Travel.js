@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const travelData = [
   {
@@ -22,9 +22,72 @@ const travelData = [
 ];
 
 const Travel = ({ onBuy }) => {
+  const [customTravel, setCustomTravel] = useState({
+    location: '',
+    description: '',
+    price: ''
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCustomTravel(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleCustomBuy = () => {
+    if (customTravel.location && customTravel.description && customTravel.price) {
+      onBuy({
+        location: customTravel.location,
+        description: customTravel.description,
+        price: parseFloat(customTravel.price)
+      });
+
+      // Reset form after buying
+      setCustomTravel({
+        location: '',
+        description: '',
+        price: ''
+      });
+    } else {
+      alert('Please fill in all fields');
+    }
+  };
+
   return (
     <div>
       <h2>Travel</h2>
+
+      {/* Custom Travel Input */}
+      <div>
+        <h3>Buy a Custom Travel Destination</h3>
+        <input
+          type="text"
+          name="location"
+          placeholder="Travel Location"
+          value={customTravel.location}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          name="description"
+          placeholder="Travel Description"
+          value={customTravel.description}
+          onChange={handleInputChange}
+        />
+        <input
+          type="number"
+          name="price"
+          placeholder="Price"
+          value={customTravel.price}
+          onChange={handleInputChange}
+        />
+        <button onClick={handleCustomBuy}>Buy Custom Travel</button>
+      </div>
+
+      {/* Existing Travel List */}
+      <h3>Available Travel Destinations</h3>
       {travelData.map((travel) => (
         <div key={travel.id}>
           <h3>{travel.location}</h3>

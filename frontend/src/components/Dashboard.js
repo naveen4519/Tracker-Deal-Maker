@@ -11,20 +11,20 @@ const Dashboard = ({ purchases }) => {
     const now = new Date();
     const filteredPurchases = purchases.filter(purchase => {
       const purchaseDate = new Date(purchase.timestamp);
-      
+
       // Time frame filtering
-      const timeFrameMatch = 
-        timeFrame === 'daily' 
+      const timeFrameMatch =
+        timeFrame === 'daily'
           ? purchaseDate.toDateString() === now.toDateString()
           : timeFrame === 'monthly'
-            ? purchaseDate.getMonth() === now.getMonth() && 
-              purchaseDate.getFullYear() === now.getFullYear()
+            ? purchaseDate.getMonth() === now.getMonth() &&
+            purchaseDate.getFullYear() === now.getFullYear()
             : purchaseDate.getFullYear() === now.getFullYear();
-      
+
       // Category filtering
-      const categoryMatch = 
+      const categoryMatch =
         category === 'all' || purchase.category === category;
-      
+
       return timeFrameMatch && categoryMatch;
     });
 
@@ -36,20 +36,20 @@ const Dashboard = ({ purchases }) => {
     const now = new Date();
     return purchases.filter(purchase => {
       const purchaseDate = new Date(purchase.timestamp);
-      
-      const timeFrameMatch = 
-        timeFrame === 'daily' 
+
+      const timeFrameMatch =
+        timeFrame === 'daily'
           ? purchaseDate.toDateString() === now.toDateString()
           : timeFrame === 'monthly'
-            ? purchaseDate.getMonth() === now.getMonth() && 
-              purchaseDate.getFullYear() === now.getFullYear()
+            ? purchaseDate.getMonth() === now.getMonth() &&
+            purchaseDate.getFullYear() === now.getFullYear()
             : purchaseDate.getFullYear() === now.getFullYear();
-      
-      const categoryMatch = 
+
+      const categoryMatch =
         selectedCategory === 'all' || purchase.category === selectedCategory;
-      
+
       return timeFrameMatch && categoryMatch;
-    });
+    }).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Sort by most recent
   };
 
   return (
@@ -60,16 +60,18 @@ const Dashboard = ({ purchases }) => {
           <Link to="/movies">Movies</Link>
           <Link to="/food">Food</Link>
           <Link to="/travel">Travel</Link>
+          <Link to="/groceries">Groceries</Link>
+          <Link to="/clothes">Clothes</Link>
         </nav>
       </header>
 
       <main>
         <section className="spending-analysis">
           <h2>Spending Analysis</h2>
-          
+
           <div className="filters">
-            <select 
-              value={timeFrame} 
+            <select
+              value={timeFrame}
               onChange={(e) => setTimeFrame(e.target.value)}
             >
               <option value="daily">Daily</option>
@@ -77,14 +79,16 @@ const Dashboard = ({ purchases }) => {
               <option value="yearly">Yearly</option>
             </select>
 
-            <select 
-              value={selectedCategory} 
+            <select
+              value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
               <option value="all">All Categories</option>
               <option value="movies">Movies</option>
               <option value="food">Food</option>
               <option value="travel">Travel</option>
+              <option value="groceries">Groceries</option>
+              <option value="clothes">Clothes</option>
             </select>
           </div>
 
@@ -94,10 +98,12 @@ const Dashboard = ({ purchases }) => {
             <p>Movies Spent: ${calculateSpending(timeFrame, 'movies').toFixed(2)}</p>
             <p>Food Spent: ${calculateSpending(timeFrame, 'food').toFixed(2)}</p>
             <p>Travel Spent: ${calculateSpending(timeFrame, 'travel').toFixed(2)}</p>
+            <p>Groceries Spent: ${calculateSpending(timeFrame, 'groceries').toFixed(2)}</p>
+            <p>Clothes Spent: ${calculateSpending(timeFrame, 'clothes').toFixed(2)}</p>
           </div>
 
           <div className="purchase-history">
-            <h3>Purchase History</h3>
+            <h3>Purchase History ({timeFrame})</h3>
             <table>
               <thead>
                 <tr>
@@ -122,9 +128,9 @@ const Dashboard = ({ purchases }) => {
         </section>
 
         <section className="spending-chart">
-          <SpendingChart 
-            purchases={purchases} 
-            timeFrame={timeFrame} 
+          <SpendingChart
+            purchases={purchases}
+            timeFrame={timeFrame}
           />
         </section>
       </main>

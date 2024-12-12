@@ -4,6 +4,8 @@ import Dashboard from './components/Dashboard';
 import Movies from './components/Movies';
 import Food from './components/Food';
 import Travel from './components/Travel';
+import Groceries from './components/Groceries';
+import Clothes from './components/Clothes';
 
 function App() {
   const [purchases, setPurchases] = useState([]);
@@ -48,6 +50,22 @@ function App() {
           element={
             <Travel
               onBuy={(travel) => addPurchase('travel', travel)}
+            />
+          }
+        />
+        <Route
+          path="/groceries"
+          element={
+            <Groceries
+              onBuy={(grocery) => addPurchase('groceries', grocery)}
+            />
+          }
+        />
+        <Route
+          path="/clothes"
+          element={
+            <Clothes
+              onBuy={(clothing) => addPurchase('clothes', clothing)}
             />
           }
         />
