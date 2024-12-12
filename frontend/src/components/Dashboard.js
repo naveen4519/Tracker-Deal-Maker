@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import SpendingChart from './SpendingChart';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Dashboard = ({ purchases }) => {
   const [timeFrame, setTimeFrame] = useState('monthly');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const navigate = useNavigate();
 
   // Spending Calculation Functions
   const calculateSpending = (timeFrame, category = 'all') => {
@@ -62,6 +62,12 @@ const Dashboard = ({ purchases }) => {
           <Link to="/travel">Travel</Link>
           <Link to="/groceries">Groceries</Link>
           <Link to="/clothes">Clothes</Link>
+          <button
+            onClick={() => navigate('/spending-chart')}
+            className="view-spending-chart-btn"
+          >
+            View Spending Chart
+          </button>
         </nav>
       </header>
 
@@ -125,13 +131,6 @@ const Dashboard = ({ purchases }) => {
               </tbody>
             </table>
           </div>
-        </section>
-
-        <section className="spending-chart">
-          <SpendingChart
-            purchases={purchases}
-            timeFrame={timeFrame}
-          />
         </section>
       </main>
     </div>

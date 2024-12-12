@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
+import SpendingChart from './components/SpendingChart';
 import Movies from './components/Movies';
 import Food from './components/Food';
 import Travel from './components/Travel';
@@ -28,6 +29,10 @@ function App() {
         <Route
           path="/"
           element={<Dashboard purchases={purchases} />}
+        />
+        <Route
+          path="/spending-chart"
+          element={<SpendingChart purchases={purchases} />}
         />
         <Route
           path="/movies"
