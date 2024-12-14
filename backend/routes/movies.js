@@ -8,6 +8,7 @@ const movieSchema = mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   price: { type: Number, required: true },
+  icon: { type: String, required: true }, // Add this line
 });
 
 const Movie = mongoose.model('Movie', movieSchema);

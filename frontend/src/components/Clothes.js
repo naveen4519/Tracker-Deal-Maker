@@ -1,37 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlusCircle, ShoppingBag } from 'lucide-react';
-import '../App.css'
-
-const clothesData = [
-    {
-        id: 1,
-        name: 'T-Shirt',
-        description: 'Comfortable cotton crew neck t-shirt',
-        price: 19.99,
-        icon: '👕'
-    },
-    {
-        id: 2,
-        name: 'Jeans',
-        description: 'Classic blue denim straight-leg jeans',
-        price: 49.99,
-        icon: '👖'
-    },
-    {
-        id: 3,
-        name: 'Hoodie',
-        description: 'Warm and cozy pullover hoodie',
-        price: 39.50,
-        icon: '🧥'
-    },
-];
+import '../App.css';
 
 const Clothes = ({ onBuy }) => {
+    const [clothes, setClothes] = useState([]);
     const [customClothing, setCustomClothing] = useState({
         name: '',
         description: '',
         price: ''
     });
+
+    useEffect(() => {
+        // Fetch clothes data from backend
+        fetch('http://localhost:5000/clothes')  // Adjust the URL if necessary
+            .then((response) => response.json())
+            .then((data) => setClothes(data))
+            .catch((error) => console.error('Error fetching clothes:', error));
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -99,19 +84,23 @@ const Clothes = ({ onBuy }) => {
             {/* Existing Clothes List */}
             <h3>Available Clothes</h3>
             <div className="item-list">
-                {clothesData.map((clothing) => (
-                    <div key={clothing.id} className="item-card">
-                        <h3>{clothing.icon} {clothing.name}</h3>
-                        <p>{clothing.description}</p>
-                        <p>Price: ${clothing.price}</p>
-                        <button
-                            className="buy-btn"
-                            onClick={() => onBuy(clothing)}
-                        >
-                            <ShoppingBag size={16} /> Buy
-                        </button>
-                    </div>
-                ))}
+                {clothes.length > 0 ? (
+                    clothes.map((clothing) => (
+                        <div key={clothing._id} className="item-card">
+                            <h3>{clothing.icon} {clothing.name}</h3> {/* Display icon along with name */}
+                            <p>{clothing.description}</p>
+                            <p>Price: ${clothing.price}</p>
+                            <button
+                                className="buy-btn"
+                                onClick={() => onBuy(clothing)}
+                            >
+                                <ShoppingBag size={16} /> Buy
+                            </button>
+                        </div>
+                    ))
+                ) : (
+                    <p>Loading clothes...</p>
+                )}
             </div>
         </div>
     );

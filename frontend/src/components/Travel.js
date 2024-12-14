@@ -1,37 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlusCircle, Plane } from 'lucide-react';
-import '../App.css'
-
-const travelData = [
-  {
-    id: 1,
-    location: 'Paris, France',
-    description: 'A romantic getaway to the City of Lights',
-    price: 1500.00,
-    icon: '🗼'
-  },
-  {
-    id: 2,
-    location: 'Tokyo, Japan',
-    description: 'An exciting trip to explore Japanese culture and technology',
-    price: 2000.00,
-    icon: '🏯'
-  },
-  {
-    id: 3,
-    location: 'New York City, USA',
-    description: 'An urban adventure in the Big Apple',
-    price: 1200.00,
-    icon: '🗽'
-  },
-];
+import '../App.css';
 
 const Travel = ({ onBuy }) => {
+  const [travelDestinations, setTravelDestinations] = useState([]);
   const [customTravel, setCustomTravel] = useState({
     location: '',
     description: '',
     price: ''
   });
+
+  useEffect(() => {
+    // Fetch travel data from backend
+    fetch('http://localhost:5000/travels')  // Adjust the URL if necessary
+      .then((response) => response.json())
+      .then((data) => setTravelDestinations(data))
+      .catch((error) => console.error('Error fetching travel destinations:', error));
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -48,8 +33,8 @@ const Travel = ({ onBuy }) => {
         description: customTravel.description,
         price: parseFloat(customTravel.price)
       });
-      
-      // Reset form after buying
+
+      // Reset form after booking
       setCustomTravel({
         location: '',
         description: '',
@@ -88,8 +73,8 @@ const Travel = ({ onBuy }) => {
           value={customTravel.price}
           onChange={handleInputChange}
         />
-        <button 
-          className="buy-btn" 
+        <button
+          className="buy-btn"
           onClick={handleCustomBuy}
         >
           <PlusCircle size={16} /> Book Custom Destination
@@ -99,19 +84,23 @@ const Travel = ({ onBuy }) => {
       {/* Existing Travel Destinations List */}
       <h3>Available Destinations</h3>
       <div className="item-list">
-        {travelData.map((travel) => (
-          <div key={travel.id} className="item-card">
-            <h3>{travel.icon} {travel.location}</h3>
-            <p>{travel.description}</p>
-            <p>Price: ${travel.price.toLocaleString()}</p>
-            <button 
-              className="buy-btn" 
-              onClick={() => onBuy(travel)}
-            >
-              <Plane size={16} /> Book
-            </button>
-          </div>
-        ))}
+        {travelDestinations.length > 0 ? (
+          travelDestinations.map((travel) => (
+            <div key={travel._id} className="item-card">
+              <h3>{travel.icon} {travel.location}</h3> {/* Display icon along with location */}
+              <p>{travel.description}</p>
+              <p>Price: ${travel.price.toLocaleString()}</p>
+              <button
+                className="buy-btn"
+                onClick={() => onBuy(travel)}
+              >
+                <Plane size={16} /> Book
+              </button>
+            </div>
+          ))
+        ) : (
+          <p>Loading destinations...</p>
+        )}
       </div>
     </div>
   );

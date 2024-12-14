@@ -30,12 +30,12 @@ const SpendingChart = ({ purchases }) => {
                     .filter(purchase => purchase.category === category)
                     .reduce((acc, purchase) => {
                         const date = new Date(purchase.timestamp);
-                        const key = timeFrame === 'daily' 
-                            ? date.toLocaleDateString() 
-                            : timeFrame === 'monthly' 
-                                ? `${date.getFullYear()}-${date.getMonth() + 1}` 
+                        const key = timeFrame === 'daily'
+                            ? date.toLocaleDateString()
+                            : timeFrame === 'monthly'
+                                ? `${date.getFullYear()}-${date.getMonth() + 1}`
                                 : date.getFullYear().toString();
-                        
+
                         acc[key] = (acc[key] || 0) + purchase.price;
                         return acc;
                     }, {});
@@ -46,10 +46,10 @@ const SpendingChart = ({ purchases }) => {
                         name,
                         value,
                         fill: category === 'movies' ? '#8884d8' :
-                              category === 'food' ? '#82ca9d' :
-                              category === 'travel' ? '#ffc658' :
-                              category === 'groceries' ? '#ff7300' :
-                              '#ff0000'
+                            category === 'food' ? '#82ca9d' :
+                                category === 'travel' ? '#ffc658' :
+                                    category === 'groceries' ? '#ff7300' :
+                                        '#ff0000'
                     }))
                 };
             });
@@ -113,27 +113,6 @@ const SpendingChart = ({ purchases }) => {
             </div>
 
             <div className="chart-container">
-                {/* Line Charts for Each Category */}
-                {calculateSpendingAnalysis.map(categoryData => (
-                    <div key={categoryData.category}>
-                        <h2>{categoryData.category.charAt(0).toUpperCase() + categoryData.category.slice(1)} Spending</h2>
-                        <LineChart width={600} height={400} data={categoryData.data}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Line 
-                                type="monotone" 
-                                dataKey="value" 
-                                stroke={categoryData.data[0]?.fill || '#8884d8'}
-                                name={categoryData.category.charAt(0).toUpperCase() + categoryData.category.slice(1)}
-                            />
-                        </LineChart>
-                    </div>
-                ))}
-
-                {/* Pie Chart */}
                 <div>
                     <h2>Spending Distribution ({timeFrame.charAt(0).toUpperCase() + timeFrame.slice(1)})</h2>
                     <PieChart width={400} height={400}>
@@ -163,6 +142,29 @@ const SpendingChart = ({ purchases }) => {
                         <Bar dataKey="value" />
                     </BarChart>
                 </div>
+
+                {/* Line Charts for Each Category */}
+                {calculateSpendingAnalysis.map(categoryData => (
+                    <div key={categoryData.category}>
+                        <h2>{categoryData.category.charAt(0).toUpperCase() + categoryData.category.slice(1)} Spending</h2>
+                        <LineChart width={600} height={400} data={categoryData.data}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Line
+                                type="monotone"
+                                dataKey="value"
+                                stroke={categoryData.data[0]?.fill || '#8884d8'}
+                                name={categoryData.category.charAt(0).toUpperCase() + categoryData.category.slice(1)}
+                            />
+                        </LineChart>
+                    </div>
+                ))}
+
+                {/* Pie Chart */}
+
             </div>
 
             {/* Spending Summary */}

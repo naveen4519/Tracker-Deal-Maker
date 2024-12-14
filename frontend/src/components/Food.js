@@ -1,37 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlusCircle, UtensilsCrossed } from 'lucide-react';
-import '../App.css'
-
-const foodData = [
-  {
-    id: 1,
-    name: 'Pizza Margherita',
-    description: 'A classic Italian pizza topped with tomatoes, mozzarella cheese, and fresh basil.',
-    price: 10,
-    icon: '🍕'
-  },
-  {
-    id: 2,
-    name: 'Sushi',
-    description: 'Japanese dish consisting of vinegared rice accompanied by various ingredients such as seafood, vegetables, and occasionally tropical fruits.',
-    price: 15,
-    icon: '🍣'
-  },
-  {
-    id: 3,
-    name: 'Burger',
-    description: 'A beef patty served in a bun with lettuce, tomato, cheese, and condiments.',
-    price: 12,
-    icon: '🍔'
-  },
-];
+import '../App.css';
 
 const Food = ({ onBuy }) => {
+  const [foodItems, setFoodItems] = useState([]);
   const [customFood, setCustomFood] = useState({
     name: '',
     description: '',
     price: ''
   });
+
+  useEffect(() => {
+    // Fetch food data from backend
+    fetch('http://localhost:5000/foods')  // Adjust the URL if necessary
+      .then((response) => response.json())
+      .then((data) => setFoodItems(data))
+      .catch((error) => console.error('Error fetching food:', error));
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -48,7 +33,7 @@ const Food = ({ onBuy }) => {
         description: customFood.description,
         price: parseFloat(customFood.price)
       });
-      
+
       // Reset form after buying
       setCustomFood({
         name: '',
@@ -88,8 +73,8 @@ const Food = ({ onBuy }) => {
           value={customFood.price}
           onChange={handleInputChange}
         />
-        <button 
-          className="buy-btn" 
+        <button
+          className="buy-btn"
           onClick={handleCustomBuy}
         >
           <PlusCircle size={16} /> Buy Custom Food
@@ -99,19 +84,23 @@ const Food = ({ onBuy }) => {
       {/* Existing Food List */}
       <h3>Available Food</h3>
       <div className="item-list">
-        {foodData.map((food) => (
-          <div key={food.id} className="item-card">
-            <h3>{food.icon} {food.name}</h3>
-            <p>{food.description}</p>
-            <p>Price: ${food.price}</p>
-            <button 
-              className="buy-btn" 
-              onClick={() => onBuy(food)}
-            >
-              <UtensilsCrossed size={16} /> Buy
-            </button>
-          </div>
-        ))}
+        {foodItems.length > 0 ? (
+          foodItems.map((food) => (
+            <div key={food._id} className="item-card">
+              <h3>{food.icon} {food.name}</h3> {/* Display icon along with name */}
+              <p>{food.description}</p>
+              <p>Price: ${food.price}</p>
+              <button
+                className="buy-btn"
+                onClick={() => onBuy(food)}
+              >
+                <UtensilsCrossed size={16} /> Buy
+              </button>
+            </div>
+          ))
+        ) : (
+          <p>Loading food items...</p>
+        )}
       </div>
     </div>
   );

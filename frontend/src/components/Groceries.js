@@ -1,37 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlusCircle, ShoppingBasket } from 'lucide-react';
-import '../App.css'
-
-const groceriesData = [
-    {
-        id: 1,
-        name: 'Milk',
-        description: 'Fresh whole milk, 1 gallon',
-        price: 3.50,
-        icon: '🥛'
-    },
-    {
-        id: 2,
-        name: 'Bread',
-        description: 'Whole wheat bread, freshly baked',
-        price: 2.75,
-        icon: '🍞'
-    },
-    {
-        id: 3,
-        name: 'Eggs',
-        description: 'Free-range large eggs, dozen',
-        price: 4.25,
-        icon: '🥚'
-    },
-];
+import '../App.css';
 
 const Groceries = ({ onBuy }) => {
+    const [groceryItems, setGroceryItems] = useState([]);
     const [customGrocery, setCustomGrocery] = useState({
         name: '',
         description: '',
         price: ''
     });
+
+    useEffect(() => {
+        // Fetch grocery data from backend
+        fetch('http://localhost:5000/groceries')  // Adjust the URL if necessary
+            .then((response) => response.json())
+            .then((data) => setGroceryItems(data))
+            .catch((error) => console.error('Error fetching groceries:', error));
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -88,8 +73,8 @@ const Groceries = ({ onBuy }) => {
                     value={customGrocery.price}
                     onChange={handleInputChange}
                 />
-                <button 
-                    className="buy-btn" 
+                <button
+                    className="buy-btn"
                     onClick={handleCustomBuy}
                 >
                     <PlusCircle size={16} /> Buy Custom Grocery
@@ -99,19 +84,23 @@ const Groceries = ({ onBuy }) => {
             {/* Existing Groceries List */}
             <h3>Available Groceries</h3>
             <div className="item-list">
-                {groceriesData.map((grocery) => (
-                    <div key={grocery.id} className="item-card">
-                        <h3>{grocery.icon} {grocery.name}</h3>
-                        <p>{grocery.description}</p>
-                        <p>Price: ${grocery.price}</p>
-                        <button 
-                            className="buy-btn" 
-                            onClick={() => onBuy(grocery)}
-                        >
-                            <ShoppingBasket size={16} /> Buy
-                        </button>
-                    </div>
-                ))}
+                {groceryItems.length > 0 ? (
+                    groceryItems.map((grocery) => (
+                        <div key={grocery._id} className="item-card">
+                            <h3>{grocery.icon} {grocery.name}</h3> {/* Display icon along with name */}
+                            <p>{grocery.description}</p>
+                            <p>Price: ${grocery.price}</p>
+                            <button
+                                className="buy-btn"
+                                onClick={() => onBuy(grocery)}
+                            >
+                                <ShoppingBasket size={16} /> Buy
+                            </button>
+                        </div>
+                    ))
+                ) : (
+                    <p>Loading groceries...</p>
+                )}
             </div>
         </div>
     );
