@@ -1,23 +1,28 @@
 import React, { useState } from 'react';
+import { PlusCircle, Plane } from 'lucide-react';
+import '../App.css'
 
 const travelData = [
   {
     id: 1,
-    location: 'Paris',
-    description: 'The capital city of France, famous for its art, history, and landmarks like the Eiffel Tower.',
-    price: 1200
+    location: 'Paris, France',
+    description: 'A romantic getaway to the City of Lights',
+    price: 1500.00,
+    icon: '🗼'
   },
   {
     id: 2,
-    location: 'New York',
-    description: 'A bustling metropolis known for its iconic skyline, Statue of Liberty, and Broadway shows.',
-    price: 1000
+    location: 'Tokyo, Japan',
+    description: 'An exciting trip to explore Japanese culture and technology',
+    price: 2000.00,
+    icon: '🏯'
   },
   {
     id: 3,
-    location: 'Tokyo',
-    description: 'The capital of Japan, blending traditional culture with modern innovation.',
-    price: 1500
+    location: 'New York City, USA',
+    description: 'An urban adventure in the Big Apple',
+    price: 1200.00,
+    icon: '🗽'
   },
 ];
 
@@ -43,7 +48,7 @@ const Travel = ({ onBuy }) => {
         description: customTravel.description,
         price: parseFloat(customTravel.price)
       });
-
+      
       // Reset form after buying
       setCustomTravel({
         location: '',
@@ -56,23 +61,23 @@ const Travel = ({ onBuy }) => {
   };
 
   return (
-    <div>
-      <h2>Travel</h2>
+    <div className="category-page">
+      <h2><Plane size={24} /> Travel</h2>
 
       {/* Custom Travel Input */}
-      <div>
-        <h3>Buy a Custom Travel Destination</h3>
+      <div className="custom-input-section">
+        <h3><PlusCircle size={20} /> Book a Custom Travel Destination</h3>
         <input
           type="text"
           name="location"
-          placeholder="Travel Location"
+          placeholder="Destination"
           value={customTravel.location}
           onChange={handleInputChange}
         />
         <input
           type="text"
           name="description"
-          placeholder="Travel Description"
+          placeholder="Trip Description"
           value={customTravel.description}
           onChange={handleInputChange}
         />
@@ -83,19 +88,31 @@ const Travel = ({ onBuy }) => {
           value={customTravel.price}
           onChange={handleInputChange}
         />
-        <button onClick={handleCustomBuy}>Buy Custom Travel</button>
+        <button 
+          className="buy-btn" 
+          onClick={handleCustomBuy}
+        >
+          <PlusCircle size={16} /> Book Custom Destination
+        </button>
       </div>
 
-      {/* Existing Travel List */}
-      <h3>Available Travel Destinations</h3>
-      {travelData.map((travel) => (
-        <div key={travel.id}>
-          <h3>{travel.location}</h3>
-          <p>{travel.description}</p>
-          <p>Price: ${travel.price}</p>
-          <button onClick={() => onBuy(travel)}>Buy</button>
-        </div>
-      ))}
+      {/* Existing Travel Destinations List */}
+      <h3>Available Destinations</h3>
+      <div className="item-list">
+        {travelData.map((travel) => (
+          <div key={travel.id} className="item-card">
+            <h3>{travel.icon} {travel.location}</h3>
+            <p>{travel.description}</p>
+            <p>Price: ${travel.price.toLocaleString()}</p>
+            <button 
+              className="buy-btn" 
+              onClick={() => onBuy(travel)}
+            >
+              <Plane size={16} /> Book
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

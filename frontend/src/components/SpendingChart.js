@@ -13,45 +13,50 @@ import {
     Legend,
     CartesianGrid
 } from 'recharts';
+import '../App.css'
 
 const SpendingChart = ({ purchases }) => {
     const [timeFrame, setTimeFrame] = useState('monthly');
 
-    // Calculation function for chart data
+    // Calculation function for chart data with detailed breakdown
     const calculateSpendingAnalysis = useMemo(() => {
-        const now = new Date();
+        // const now = new Date();
         const categories = ['movies', 'food', 'travel', 'groceries', 'clothes'];
 
-        // Calculate spending for daily, monthly, and yearly
-        const timeFrames = ['daily', 'monthly', 'yearly'];
+        // Function to group purchases by category and date
+        const groupPurchasesByCategory = (filteredPurchases) => {
+            return categories.map(category => {
+                const categoryPurchases = filteredPurchases
+                    .filter(purchase => purchase.category === category)
+                    .reduce((acc, purchase) => {
+                        const date = new Date(purchase.timestamp);
+                        const key = timeFrame === 'daily' 
+                            ? date.toLocaleDateString() 
+                            : timeFrame === 'monthly' 
+                                ? `${date.getFullYear()}-${date.getMonth() + 1}` 
+                                : date.getFullYear().toString();
+                        
+                        acc[key] = (acc[key] || 0) + purchase.price;
+                        return acc;
+                    }, {});
 
-        const spendingAnalysis = timeFrames.map(timeFrame => {
-            const categorySpending = categories.reduce((acc, category) => {
-                const filteredPurchases = purchases.filter(purchase => {
-                    const purchaseDate = new Date(purchase.timestamp);
-                    const timeFrameMatch =
-                        timeFrame === 'daily'
-                            ? purchaseDate.toDateString() === now.toDateString()
-                            : timeFrame === 'monthly'
-                                ? purchaseDate.getMonth() === now.getMonth() &&
-                                purchaseDate.getFullYear() === now.getFullYear()
-                                : purchaseDate.getFullYear() === now.getFullYear();
+                return {
+                    category,
+                    data: Object.entries(categoryPurchases).map(([name, value]) => ({
+                        name,
+                        value,
+                        fill: category === 'movies' ? '#8884d8' :
+                              category === 'food' ? '#82ca9d' :
+                              category === 'travel' ? '#ffc658' :
+                              category === 'groceries' ? '#ff7300' :
+                              '#ff0000'
+                    }))
+                };
+            });
+        };
 
-                    return timeFrameMatch && purchase.category === category;
-                });
-
-                const totalSpending = filteredPurchases.reduce((total, purchase) => total + purchase.price, 0);
-                return { ...acc, [category]: totalSpending };
-            }, {});
-
-            return {
-                name: timeFrame.charAt(0).toUpperCase() + timeFrame.slice(1),
-                ...categorySpending
-            };
-        });
-
-        return spendingAnalysis;
-    }, [purchases]);
+        return groupPurchasesByCategory(purchases);
+    }, [purchases, timeFrame]);
 
     // Filtered Purchases based on selected time frame
     const filteredPurchases = useMemo(() => {
@@ -108,22 +113,25 @@ const SpendingChart = ({ purchases }) => {
             </div>
 
             <div className="chart-container">
-                {/* Line Chart for Spending Analysis */}
-                <div>
-                    <h2>Spending Analysis Across Time Frames</h2>
-                    <LineChart width={600} height={400} data={calculateSpendingAnalysis}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Line type="monotone" dataKey="movies" stroke="#8884d8" />
-                        <Line type="monotone" dataKey="food" stroke="#82ca9d" />
-                        <Line type="monotone" dataKey="travel" stroke="#ffc658" />
-                        <Line type="monotone" dataKey="groceries" stroke="#ff7300" />
-                        <Line type="monotone" dataKey="clothes" stroke="#ff0000" />
-                    </LineChart>
-                </div>
+                {/* Line Charts for Each Category */}
+                {calculateSpendingAnalysis.map(categoryData => (
+                    <div key={categoryData.category}>
+                        <h2>{categoryData.category.charAt(0).toUpperCase() + categoryData.category.slice(1)} Spending</h2>
+                        <LineChart width={600} height={400} data={categoryData.data}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Line 
+                                type="monotone" 
+                                dataKey="value" 
+                                stroke={categoryData.data[0]?.fill || '#8884d8'}
+                                name={categoryData.category.charAt(0).toUpperCase() + categoryData.category.slice(1)}
+                            />
+                        </LineChart>
+                    </div>
+                ))}
 
                 {/* Pie Chart */}
                 <div>

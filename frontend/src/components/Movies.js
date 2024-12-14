@@ -1,23 +1,28 @@
 import React, { useState } from 'react';
+import { PlusCircle, Film } from 'lucide-react';
+import '../App.css'
 
 const moviesData = [
   {
     id: 1,
     name: 'Inception',
-    description: 'A mind-bending thriller about a thief who enters the dreams of others.',
-    price: 15
+    description: 'A sci-fi thriller about dream infiltration and reality manipulation.',
+    price: 12.99,
+    icon: '🎬'
   },
   {
     id: 2,
-    name: 'The Dark Knight',
-    description: 'Batman sets out to dismantle the criminal organizations that plague Gotham City.',
-    price: 18
+    name: 'The Shawshank Redemption',
+    description: 'A powerful drama about hope and friendship in prison.',
+    price: 9.99,
+    icon: '🍿'
   },
   {
     id: 3,
     name: 'Interstellar',
-    description: 'A team of explorers travel through a wormhole in space in an attempt to ensure humanity\'s survival.',
-    price: 20
+    description: 'An epic science fiction film exploring space travel and human survival.',
+    price: 14.50,
+    icon: '🚀'
   },
 ];
 
@@ -43,7 +48,7 @@ const Movies = ({ onBuy }) => {
         description: customMovie.description,
         price: parseFloat(customMovie.price)
       });
-
+      
       // Reset form after buying
       setCustomMovie({
         name: '',
@@ -56,12 +61,12 @@ const Movies = ({ onBuy }) => {
   };
 
   return (
-    <div>
-      <h2>Movies</h2>
+    <div className="category-page">
+      <h2><Film size={24} /> Movies</h2>
 
       {/* Custom Movie Input */}
-      <div>
-        <h3>Buy a Custom Movie</h3>
+      <div className="custom-input-section">
+        <h3><PlusCircle size={20} /> Buy a Custom Movie</h3>
         <input
           type="text"
           name="name"
@@ -83,19 +88,31 @@ const Movies = ({ onBuy }) => {
           value={customMovie.price}
           onChange={handleInputChange}
         />
-        <button onClick={handleCustomBuy}>Buy Custom Movie</button>
+        <button 
+          className="buy-btn" 
+          onClick={handleCustomBuy}
+        >
+          <PlusCircle size={16} /> Buy Custom Movie
+        </button>
       </div>
 
       {/* Existing Movies List */}
       <h3>Available Movies</h3>
-      {moviesData.map((movie) => (
-        <div key={movie.id}>
-          <h3>{movie.name}</h3>
-          <p>{movie.description}</p>
-          <p>Price: ${movie.price}</p>
-          <button onClick={() => onBuy(movie)}>Buy</button>
-        </div>
-      ))}
+      <div className="item-list">
+        {moviesData.map((movie) => (
+          <div key={movie.id} className="item-card">
+            <h3>{movie.icon} {movie.name}</h3>
+            <p>{movie.description}</p>
+            <p>Price: ${movie.price}</p>
+            <button 
+              className="buy-btn" 
+              onClick={() => onBuy(movie)}
+            >
+              <Film size={16} /> Buy
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
