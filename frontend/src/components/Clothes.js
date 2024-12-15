@@ -4,6 +4,7 @@ import '../App.css';
 
 const Clothes = ({ onBuy }) => {
     const [clothes, setClothes] = useState([]);
+    const [purchaseSuccessItemId, setPurchaseSuccessItemId] = useState(null);
     const [customClothing, setCustomClothing] = useState({
         name: '',
         description: '',
@@ -33,6 +34,9 @@ const Clothes = ({ onBuy }) => {
                 description: customClothing.description,
                 price: parseFloat(customClothing.price)
             });
+
+            setPurchaseSuccessItemId('custom'); // 'custom' represents custom clothing item
+            setTimeout(() => setPurchaseSuccessItemId(null), 1000);
 
             // Reset form after buying
             setCustomClothing({
@@ -92,10 +96,21 @@ const Clothes = ({ onBuy }) => {
                             <p>Price: ${clothing.price}</p>
                             <button
                                 className="buy-btn"
-                                onClick={() => onBuy(clothing)}
+                                onClick={() => {
+                                    onBuy(clothing);
+                                    setPurchaseSuccessItemId(clothing._id);
+                                    setTimeout(() => setPurchaseSuccessItemId(null), 1000); // Hide after 0.5 seconds
+                                }}
                             >
                                 <ShoppingBag size={16} /> Buy
                             </button>
+                            {/* Display Success Message */}
+                            {purchaseSuccessItemId === clothing._id && (
+                                <div className="success-message">
+                                    Successfully Purchased!
+                                </div>
+                            )}
+
                         </div>
                     ))
                 ) : (

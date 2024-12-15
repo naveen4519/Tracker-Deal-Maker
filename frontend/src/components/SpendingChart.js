@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import {
     PieChart,
     Pie,
+    Cell,
     BarChart,
     Bar,
     LineChart,
@@ -11,16 +12,37 @@ import {
     YAxis,
     Tooltip,
     Legend,
-    CartesianGrid
+    CartesianGrid,
+    ResponsiveContainer
 } from 'recharts';
 import '../App.css'
+
+const COLORS = {
+    movies: '#8884d8',
+    food: '#82ca9d', 
+    travel: '#ffc658',
+    groceries: '#ff7300',
+    clothes: '#ff0000'
+};
+
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, name }) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+        <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+            {`${name} ${(percent * 100).toFixed(0)}%`}
+        </text>
+    );
+};
 
 const SpendingChart = ({ purchases }) => {
     const [timeFrame, setTimeFrame] = useState('monthly');
 
     // Calculation function for chart data with detailed breakdown
     const calculateSpendingAnalysis = useMemo(() => {
-        // const now = new Date();
         const categories = ['movies', 'food', 'travel', 'groceries', 'clothes'];
 
         // Function to group purchases by category and date
@@ -28,29 +50,15 @@ const SpendingChart = ({ purchases }) => {
             return categories.map(category => {
                 const categoryPurchases = filteredPurchases
                     .filter(purchase => purchase.category === category)
-                    .reduce((acc, purchase) => {
-                        const date = new Date(purchase.timestamp);
-                        const key = timeFrame === 'daily'
-                            ? date.toLocaleDateString()
-                            : timeFrame === 'monthly'
-                                ? `${date.getFullYear()}-${date.getMonth() + 1}`
-                                : date.getFullYear().toString();
-
-                        acc[key] = (acc[key] || 0) + purchase.price;
-                        return acc;
-                    }, {});
+                    .map(purchase => ({
+                        date: new Date(purchase.timestamp).toLocaleDateString(),
+                        price: purchase.price
+                    }))
+                    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
                 return {
                     category,
-                    data: Object.entries(categoryPurchases).map(([name, value]) => ({
-                        name,
-                        value,
-                        fill: category === 'movies' ? '#8884d8' :
-                            category === 'food' ? '#82ca9d' :
-                                category === 'travel' ? '#ffc658' :
-                                    category === 'groceries' ? '#ff7300' :
-                                        '#ff0000'
-                    }))
+                    data: categoryPurchases
                 };
             });
         };
@@ -82,11 +90,7 @@ const SpendingChart = ({ purchases }) => {
         return Object.entries(categorySpending).map(([name, value]) => ({
             name,
             value,
-            fill: name === 'movies' ? '#8884d8' :
-                name === 'food' ? '#82ca9d' :
-                    name === 'travel' ? '#ffc658' :
-                        name === 'groceries' ? '#ff7300' :
-                            '#ff0000'
+            color: COLORS[name] || ''
         }));
     }, [filteredPurchases]);
 
@@ -113,58 +117,67 @@ const SpendingChart = ({ purchases }) => {
             </div>
 
             <div className="chart-container">
+                {/* Pie Chart with Customized Label */}
                 <div>
                     <h2>Spending Distribution ({timeFrame.charAt(0).toUpperCase() + timeFrame.slice(1)})</h2>
-                    <PieChart width={400} height={400}>
-                        <Pie
-                            data={pieChartData}
-                            dataKey="value"
-                            nameKey="name"
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={150}
-                            label
-                        />
-                        <Tooltip />
-                        <Legend />
-                    </PieChart>
+                    <ResponsiveContainer width={400} height={400}>
+                        <PieChart>
+                            <Pie
+                                data={pieChartData}
+                                dataKey="value"
+                                nameKey="name"
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={150}
+                                label={renderCustomizedLabel}
+                                labelLine={false}
+                            >
+                                {pieChartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                ))}
+                            </Pie>
+                            <Tooltip />
+                            <Legend />
+                        </PieChart>
+                    </ResponsiveContainer>
                 </div>
 
-                {/* Bar Chart */}
+                {/* Bar Chart - Restored to Original */}
                 <div>
                     <h2>Spending Comparison ({timeFrame.charAt(0).toUpperCase() + timeFrame.slice(1)})</h2>
-                    <BarChart width={400} height={400} data={pieChartData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="value" />
-                    </BarChart>
+                    <ResponsiveContainer width={400} height={400}>
+                        <BarChart data={pieChartData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="value" />
+                        </BarChart>
+                    </ResponsiveContainer>
                 </div>
 
                 {/* Line Charts for Each Category */}
                 {calculateSpendingAnalysis.map(categoryData => (
                     <div key={categoryData.category}>
                         <h2>{categoryData.category.charAt(0).toUpperCase() + categoryData.category.slice(1)} Spending</h2>
-                        <LineChart width={600} height={400} data={categoryData.data}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Line
-                                type="monotone"
-                                dataKey="value"
-                                stroke={categoryData.data[0]?.fill || '#8884d8'}
-                                name={categoryData.category.charAt(0).toUpperCase() + categoryData.category.slice(1)}
-                            />
-                        </LineChart>
+                        <ResponsiveContainer width={600} height={400}>
+                            <LineChart data={categoryData.data}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="date" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Line
+                                    type="monotone"
+                                    dataKey="price"
+                                    stroke={COLORS[categoryData.category] || '#8884d8'}
+                                    name={categoryData.category.charAt(0).toUpperCase() + categoryData.category.slice(1)}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
                     </div>
                 ))}
-
-                {/* Pie Chart */}
-
             </div>
 
             {/* Spending Summary */}

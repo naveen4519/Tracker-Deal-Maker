@@ -9,6 +9,7 @@ const Travel = ({ onBuy }) => {
     description: '',
     price: ''
   });
+  const [purchaseSuccessItemId, setPurchaseSuccessItemId] = useState(null);  // Track the purchased item ID
 
   useEffect(() => {
     // Fetch travel data from backend
@@ -33,6 +34,10 @@ const Travel = ({ onBuy }) => {
         description: customTravel.description,
         price: parseFloat(customTravel.price)
       });
+
+      // Set the purchased item ID for the success message
+      setPurchaseSuccessItemId('custom'); // 'custom' represents custom travel item
+      setTimeout(() => setPurchaseSuccessItemId(null), 500); // Hide after 0.5 seconds
 
       // Reset form after booking
       setCustomTravel({
@@ -79,6 +84,13 @@ const Travel = ({ onBuy }) => {
         >
           <PlusCircle size={16} /> Book Custom Destination
         </button>
+
+        {/* Display Success Message only for custom item */}
+        {purchaseSuccessItemId === 'custom' && (
+          <div className="success-message">
+            Successfully Booked!
+          </div>
+        )}
       </div>
 
       {/* Existing Travel Destinations List */}
@@ -92,10 +104,23 @@ const Travel = ({ onBuy }) => {
               <p>Price: ${travel.price.toLocaleString()}</p>
               <button
                 className="buy-btn"
-                onClick={() => onBuy(travel)}
+                onClick={() => {
+                  onBuy(travel);
+
+                  // Set the purchased item ID for the success message
+                  setPurchaseSuccessItemId(travel._id);
+                  setTimeout(() => setPurchaseSuccessItemId(null), 500); // Hide after 0.5 seconds
+                }}
               >
                 <Plane size={16} /> Book
               </button>
+
+              {/* Display Success Message only for the booked item */}
+              {purchaseSuccessItemId === travel._id && (
+                <div className="success-message">
+                  Successfully Booked!
+                </div>
+              )}
             </div>
           ))
         ) : (

@@ -9,6 +9,7 @@ const foodRoute = require('./routes/food');
 const travelRoute = require('./routes/travel');
 const groceriesRoute = require('./routes/groceries');
 const clothesRoute = require('./routes/clothes');
+const dealsRoute = require('./routes/deals');
 
 // Create Express App
 const app = express();
@@ -34,6 +35,7 @@ app.use('/foods', foodRoute);
 app.use('/travels', travelRoute);
 app.use('/groceries', groceriesRoute);
 app.use('/clothes', clothesRoute);
+app.use('/deals', dealsRoute);
 
 // Start the Server
 const PORT = 5000;

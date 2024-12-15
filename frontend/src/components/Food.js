@@ -9,6 +9,7 @@ const Food = ({ onBuy }) => {
     description: '',
     price: ''
   });
+  const [purchaseSuccessItemId, setPurchaseSuccessItemId] = useState(null);  // Track the purchased item ID
 
   useEffect(() => {
     // Fetch food data from backend
@@ -33,6 +34,10 @@ const Food = ({ onBuy }) => {
         description: customFood.description,
         price: parseFloat(customFood.price)
       });
+
+      // Set the purchased item ID for the success message
+      setPurchaseSuccessItemId('custom'); // 'custom' represents custom food item
+      setTimeout(() => setPurchaseSuccessItemId(null), 500); // Hide after 0.5 seconds
 
       // Reset form after buying
       setCustomFood({
@@ -79,6 +84,13 @@ const Food = ({ onBuy }) => {
         >
           <PlusCircle size={16} /> Buy Custom Food
         </button>
+
+        {/* Display Success Message only for custom item */}
+        {purchaseSuccessItemId === 'custom' && (
+          <div className="success-message">
+            Successfully Purchased!
+          </div>
+        )}
       </div>
 
       {/* Existing Food List */}
@@ -89,13 +101,26 @@ const Food = ({ onBuy }) => {
             <div key={food._id} className="item-card">
               <h3>{food.icon} {food.name}</h3> {/* Display icon along with name */}
               <p>{food.description}</p>
-              <p>Price: ${food.price}</p>
+              <p>Price: ${food.price.toLocaleString()}</p>
               <button
                 className="buy-btn"
-                onClick={() => onBuy(food)}
+                onClick={() => {
+                  onBuy(food);
+
+                  // Set the purchased item ID for the success message
+                  setPurchaseSuccessItemId(food._id);
+                  setTimeout(() => setPurchaseSuccessItemId(null), 500); // Hide after 0.5 seconds
+                }}
               >
                 <UtensilsCrossed size={16} /> Buy
               </button>
+
+              {/* Display Success Message only for the purchased item */}
+              {purchaseSuccessItemId === food._id && (
+                <div className="success-message">
+                  Successfully Purchased!
+                </div>
+              )}
             </div>
           ))
         ) : (

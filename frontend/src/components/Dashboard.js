@@ -63,11 +63,18 @@ const Dashboard = ({ purchases }) => {
           <Link to="/travel">Travel</Link>
           <Link to="/groceries">Groceries</Link>
           <Link to="/clothes">Clothes</Link>
+          <Link to="/deals">Deals</Link>
           <button
             onClick={() => navigate('/spending-chart')}
             className="view-spending-chart-btn"
           >
             View Spending Chart
+          </button>
+          <button
+            onClick={() => navigate('/financial-assistant')}
+            className="financial-assistant-btn"
+          >
+            Financial Assistant
           </button>
         </nav>
       </header>
@@ -96,6 +103,7 @@ const Dashboard = ({ purchases }) => {
               <option value="travel">Travel</option>
               <option value="groceries">Groceries</option>
               <option value="clothes">Clothes</option>
+              <option value="deals">Deals</option>
             </select>
           </div>
 
@@ -107,6 +115,7 @@ const Dashboard = ({ purchases }) => {
             <p>Travel Spent: ${calculateSpending(timeFrame, 'travel').toFixed(2)}</p>
             <p>Groceries Spent: ${calculateSpending(timeFrame, 'groceries').toFixed(2)}</p>
             <p>Clothes Spent: ${calculateSpending(timeFrame, 'clothes').toFixed(2)}</p>
+            <p>Deals Spent: ${calculateSpending(timeFrame, 'deals').toFixed(2)}</p>
           </div>
 
           <div className="purchase-history">

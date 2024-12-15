@@ -1,29 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { PlusCircle, Film } from 'lucide-react';
 import '../App.css';
-import axios from 'axios';
 
 const Movies = ({ onBuy }) => {
   const [movies, setMovies] = useState([]);
   const [customMovie, setCustomMovie] = useState({
-    name: '',
+    title: '',
     description: '',
     price: ''
   });
+  const [purchaseSuccessItemId, setPurchaseSuccessItemId] = useState(null);  // Track the purchased item ID
 
-  // Fetch movies from the backend
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/movies');
-        setMovies(response.data); // Set the movies state with data from backend
-      } catch (err) {
-        console.error('Error fetching movies:', err);
-      }
-    };
-
-    fetchMovies();
-  }, []); // Empty dependency array ensures this runs once when the component mounts
+    // Fetch movies data from backend
+    fetch('http://localhost:5000/movies')  // Adjust the URL if necessary
+      .then((response) => response.json())
+      .then((data) => setMovies(data))
+      .catch((error) => console.error('Error fetching movies:', error));
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,16 +28,20 @@ const Movies = ({ onBuy }) => {
   };
 
   const handleCustomBuy = () => {
-    if (customMovie.name && customMovie.description && customMovie.price) {
+    if (customMovie.title && customMovie.description && customMovie.price) {
       onBuy({
-        name: customMovie.name,
+        title: customMovie.title,
         description: customMovie.description,
         price: parseFloat(customMovie.price)
       });
 
-      // Reset form after buying
+      // Set the purchased item ID for the success message
+      setPurchaseSuccessItemId('custom'); // 'custom' represents custom movie
+      setTimeout(() => setPurchaseSuccessItemId(null), 500); // Hide after 0.5 seconds
+
+      // Reset form after booking
       setCustomMovie({
-        name: '',
+        title: '',
         description: '',
         price: ''
       });
@@ -61,9 +59,9 @@ const Movies = ({ onBuy }) => {
         <h3><PlusCircle size={20} /> Buy a Custom Movie</h3>
         <input
           type="text"
-          name="name"
-          placeholder="Movie Name"
-          value={customMovie.name}
+          name="title"
+          placeholder="Movie Title"
+          value={customMovie.title}
           onChange={handleInputChange}
         />
         <input
@@ -86,6 +84,13 @@ const Movies = ({ onBuy }) => {
         >
           <PlusCircle size={16} /> Buy Custom Movie
         </button>
+
+        {/* Display Success Message only for custom item */}
+        {purchaseSuccessItemId === 'custom' && (
+          <div className="success-message">
+            Successfully Purchased!
+          </div>
+        )}
       </div>
 
       {/* Existing Movies List */}
@@ -94,16 +99,28 @@ const Movies = ({ onBuy }) => {
         {movies.length > 0 ? (
           movies.map((movie) => (
             <div key={movie._id} className="item-card">
-               <h3>{movie.icon} {movie.name}</h3> 
-              {/* <h3>{movie.name}</h3> */}
+              <h3>{movie.icon} {movie.title}</h3> {/* Display icon along with title */}
               <p>{movie.description}</p>
-              <p>Price: ${movie.price}</p>
+              <p>Price: ${movie.price.toLocaleString()}</p>
               <button
                 className="buy-btn"
-                onClick={() => onBuy(movie)}
+                onClick={() => {
+                  onBuy(movie);
+
+                  // Set the purchased item ID for the success message
+                  setPurchaseSuccessItemId(movie._id);
+                  setTimeout(() => setPurchaseSuccessItemId(null), 500); // Hide after 0.5 seconds
+                }}
               >
                 <Film size={16} /> Buy
               </button>
+
+              {/* Display Success Message only for the purchased item */}
+              {purchaseSuccessItemId === movie._id && (
+                <div className="success-message">
+                  Successfully Purchased!
+                </div>
+              )}
             </div>
           ))
         ) : (

@@ -7,6 +7,8 @@ import Food from './components/Food';
 import Travel from './components/Travel';
 import Groceries from './components/Groceries';
 import Clothes from './components/Clothes';
+import FinancialLLMChat from './components/FinancialLLMChat';
+import Deals from './components/Deals';
 
 function App() {
   const [purchases, setPurchases] = useState([]);
@@ -73,6 +75,22 @@ function App() {
               onBuy={(clothing) => addPurchase('clothes', clothing)}
             />
           }
+        />
+        <Route
+          path="/deals"
+          element={
+            <Deals
+              onBuy={(deal) => addPurchase('deals', deal)}
+            />
+          }
+        />
+
+        <Route
+          path="/financial-assistant"
+          element={<FinancialLLMChat
+            purchases={purchases}
+            monthlyExpenditure={8000}
+          />}
         />
       </Routes>
     </Router>
