@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+require('dotenv').config();
+const mongoUri = process.env.MONGO_URI;
 
 // Import Routes
 const moviesRoute = require('./routes/movies');
@@ -10,7 +12,7 @@ const travelRoute = require('./routes/travel');
 const groceriesRoute = require('./routes/groceries');
 const clothesRoute = require('./routes/clothes');
 const dealsRoute = require('./routes/deals');
-const purchasesRoute = require('./routes/purchases');
+// const purchasesRoute = require('./routes/purchases');
 
 // Create Express App
 const app = express();
@@ -20,7 +22,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // MongoDB Connection
-mongoose.connect('mongodb+srv://naveen:Sumanth123@cluster0.2k7qtkf.mongodb.net/expenseTracker?retryWrites=true&w=majority', {
+mongoose.connect(mongoUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })
@@ -37,7 +39,7 @@ app.use('/travels', travelRoute);
 app.use('/groceries', groceriesRoute);
 app.use('/clothes', clothesRoute);
 app.use('/deals', dealsRoute);
-app.use('/purchases', purchasesRoute);
+// app.use('/purchases', purchasesRoute);
 
 // Start the Server
 const PORT = 5000;
