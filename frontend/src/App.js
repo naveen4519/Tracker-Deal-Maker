@@ -25,16 +25,35 @@ function App() {
     setPurchases(prevPurchases => [...prevPurchases, newPurchase]);
   };
 
+  // fetch('http://localhost:5000/purchases', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify(newPurchase),
+  // })
+  //   .then((response) => {
+  //     if (!response.ok) {
+  //       throw new Error('Failed to save purchase');
+  //     }
+  //     return response.json();
+  //   })
+  //   .then((data) => {
+  //     console.log('Purchase saved successfully:', data);
+  //   })
+  //   .catch((error) => {
+  //     console.error('Error saving purchase:', error);
+  //   });
+
+
   return (
     <Router>
       <Routes>
         <Route
           path="/"
-          element={<Dashboard purchases={purchases} />}
+          element={<Dashboard />}
         />
         <Route
           path="/spending-chart"
-          element={<SpendingChart purchases={purchases} />}
+          element={<SpendingChart />}
         />
         <Route
           path="/movies"

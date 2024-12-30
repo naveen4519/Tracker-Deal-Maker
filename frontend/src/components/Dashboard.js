@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import '../App.css'
 
-const Dashboard = ({ purchases }) => {
+const Dashboard = () => {
+  const [purchases, setPurchases] = useState([]);
   const [timeFrame, setTimeFrame] = useState('monthly');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const navigate = useNavigate();
+
+
+  // Fetch purchases from backend
+  useEffect(() => {
+    fetch('http://localhost:5000/purchases')
+      .then((response) => response.json())
+      .then((data) => setPurchases(data))
+      .catch((error) => console.error('Error fetching purchases:', error));
+  }, []);
+
 
   // Spending Calculation Functions
   const calculateSpending = (timeFrame, category = 'all') => {
@@ -135,7 +146,7 @@ const Dashboard = ({ purchases }) => {
                     <td>{new Date(purchase.timestamp).toLocaleString()}</td>
                     <td>{purchase.category}</td>
                     <td>{purchase.name}</td>
-                    <td>${purchase.price.toFixed(2)}</td>
+                    <td>${purchase.price}</td>
                   </tr>
                 ))}
               </tbody>

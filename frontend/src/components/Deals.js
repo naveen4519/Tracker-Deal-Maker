@@ -33,6 +33,31 @@ const Deals = ({ onBuy }) => {
         deal.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+
+    const handleBuy = (item) => {
+        const purchase = {
+            name: item.name,
+            description: item.description,
+            price: parseFloat(item.offerPrice),
+            category: 'deals',
+            timestamp: new Date().toISOString(),
+        };
+
+        // Send the purchase data to the backend
+        fetch('http://localhost:5000/purchases', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(purchase),
+        })
+            .then((response) => response.json())
+            .then(() => {
+                setPurchaseSuccessItemId(item._id); // Set the purchased item's ID
+                setTimeout(() => setPurchaseSuccessItemId(null), 1000); // Hide success message after 1 second
+            })
+            .catch((error) => console.error('Error saving purchase:', error));
+    };
+
+
     return (
         <div className="category-page">
             <h2><Tag size={24} /> Deals and Offers</h2>
@@ -72,17 +97,7 @@ const Deals = ({ onBuy }) => {
                             </div>
                             <button
                                 className="buy-btn"
-                                onClick={() => {
-                                    onBuy({
-                                        name: deal.name,
-                                        description: deal.description,
-                                        price: deal.offerPrice
-                                    });
-
-                                    // Set the purchased item ID for the success message
-                                    setPurchaseSuccessItemId(deal._id);
-                                    setTimeout(() => setPurchaseSuccessItemId(null), 500); // Hide after 0.5 seconds
-                                }}
+                                onClick={() => handleBuy(deal)}
                             >
                                 <Tag size={16} /> Buy Deal
                             </button>

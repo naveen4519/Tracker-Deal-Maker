@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import {
     PieChart,
     Pie,
@@ -19,7 +20,7 @@ import '../App.css'
 
 const COLORS = {
     movies: '#8884d8',
-    food: '#82ca9d', 
+    food: '#82ca9d',
     travel: '#ffc658',
     groceries: '#ff7300',
     clothes: '#ff0000'
@@ -38,8 +39,22 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
     );
 };
 
-const SpendingChart = ({ purchases }) => {
+const SpendingChart = () => {
     const [timeFrame, setTimeFrame] = useState('monthly');
+    const [purchases, setPurchases] = useState([]);
+
+    useEffect(() => {
+        const fetchPurchases = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/purchases');
+                setPurchases(response.data); // Set the purchases data
+            } catch (error) {
+                console.error('Error fetching purchases:', error);
+            }
+        };
+
+        fetchPurchases();
+    }, []);
 
     // Calculation function for chart data with detailed breakdown
     const calculateSpendingAnalysis = useMemo(() => {

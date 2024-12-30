@@ -50,6 +50,30 @@ const Travel = ({ onBuy }) => {
     }
   };
 
+
+  const handleBuy = (item) => {
+    const purchase = {
+      name: item.location,
+      description: item.description,
+      price: parseFloat(item.price),
+      category: 'travel',
+      timestamp: new Date().toISOString(),
+    };
+
+    // Send the purchase data to the backend
+    fetch('http://localhost:5000/purchases', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(purchase),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setPurchaseSuccessItemId(item._id); // Set the purchased item's ID
+        setTimeout(() => setPurchaseSuccessItemId(null), 1000); // Hide success message after 1 second
+      })
+      .catch((error) => console.error('Error saving purchase:', error));
+  };
+
   return (
     <div className="category-page">
       <h2><Plane size={24} /> Travel</h2>
@@ -104,13 +128,7 @@ const Travel = ({ onBuy }) => {
               <p>Price: ${travel.price.toLocaleString()}</p>
               <button
                 className="buy-btn"
-                onClick={() => {
-                  onBuy(travel);
-
-                  // Set the purchased item ID for the success message
-                  setPurchaseSuccessItemId(travel._id);
-                  setTimeout(() => setPurchaseSuccessItemId(null), 500); // Hide after 0.5 seconds
-                }}
+                onClick={() => handleBuy(travel)}
               >
                 <Plane size={16} /> Book
               </button>

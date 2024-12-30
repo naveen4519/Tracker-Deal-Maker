@@ -50,6 +50,31 @@ const Food = ({ onBuy }) => {
     }
   };
 
+
+
+  const handleBuy = (item) => {
+    const purchase = {
+      name: item.name,
+      description: item.description,
+      price: parseFloat(item.price),
+      category: 'food',
+      timestamp: new Date().toISOString(),
+    };
+
+    // Send the purchase data to the backend
+    fetch('http://localhost:5000/purchases', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(purchase),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setPurchaseSuccessItemId(item._id); // Set the purchased item's ID
+        setTimeout(() => setPurchaseSuccessItemId(null), 1000); // Hide success message after 1 second
+      })
+      .catch((error) => console.error('Error saving purchase:', error));
+  };
+
   return (
     <div className="category-page">
       <h2><UtensilsCrossed size={24} /> Food</h2>
@@ -104,13 +129,7 @@ const Food = ({ onBuy }) => {
               <p>Price: ${food.price.toLocaleString()}</p>
               <button
                 className="buy-btn"
-                onClick={() => {
-                  onBuy(food);
-
-                  // Set the purchased item ID for the success message
-                  setPurchaseSuccessItemId(food._id);
-                  setTimeout(() => setPurchaseSuccessItemId(null), 500); // Hide after 0.5 seconds
-                }}
+                onClick={() => handleBuy(food)}
               >
                 <UtensilsCrossed size={16} /> Buy
               </button>

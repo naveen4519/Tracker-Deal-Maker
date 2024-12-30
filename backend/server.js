@@ -12,14 +12,19 @@ const travelRoute = require('./routes/travel');
 const groceriesRoute = require('./routes/groceries');
 const clothesRoute = require('./routes/clothes');
 const dealsRoute = require('./routes/deals');
-// const purchasesRoute = require('./routes/purchases');
+const purchasesRoute = require('./routes/purchases');
 
 // Create Express App
 const app = express();
 
 // Middleware
+app.use(cors({
+    origin: 'http://localhost:3000', // Replace with your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(bodyParser.json());
-app.use(cors());
 
 // MongoDB Connection
 mongoose.connect(mongoUri, {
@@ -39,7 +44,7 @@ app.use('/travels', travelRoute);
 app.use('/groceries', groceriesRoute);
 app.use('/clothes', clothesRoute);
 app.use('/deals', dealsRoute);
-// app.use('/purchases', purchasesRoute);
+app.use('/purchases', purchasesRoute);
 
 // Start the Server
 const PORT = 5000;
