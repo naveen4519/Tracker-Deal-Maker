@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // Mock LLM response generation with dynamic suggestions
 const generateLLMResponse = (userQuery, purchases, recentQueries) => {
-    const query = userQuery.toLowerCase();
+    // const query = userQuery.toLowerCase();
 
     // Spending analysis helper functions
     const calculateTotalSpending = () => {
@@ -44,6 +44,7 @@ const generateLLMResponse = (userQuery, purchases, recentQueries) => {
 };
 
 const FinancialLLMChat = ({ purchases }) => {
+    const navigate = useNavigate();
     const [messages, setMessages] = useState([
         {
             role: 'assistant',
@@ -85,7 +86,7 @@ const FinancialLLMChat = ({ purchases }) => {
             <header>
                 <h1>Gemini Financial Assistant</h1>
                 <nav>
-                    <Link to="/">Back to Dashboard</Link>
+                    <button onClick={() => navigate('/')}>Back to Dashboard</button>
                 </nav>
             </header>
 

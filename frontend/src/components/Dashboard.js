@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import '../App.css'
 
@@ -69,18 +69,21 @@ const Dashboard = () => {
       <header>
         <h1>Expense Tracker Dashboard</h1>
         <nav>
-          <Link to="/movies">Movies</Link>
-          <Link to="/food">Food</Link>
-          <Link to="/travel">Travel</Link>
-          <Link to="/groceries">Groceries</Link>
-          <Link to="/clothes">Clothes</Link>
-          <Link to="/deals">Deals</Link>
+          <div className="button-row">
+            <button onClick={() => navigate('/movies')}>Movies</button>
+            <button onClick={() => navigate('/food')}>Food</button>
+            <button onClick={() => navigate('/travel')}>Travel</button>
+            <button onClick={() => navigate('/groceries')}>Groceries</button>
+            <button onClick={() => navigate('/clothes')}>Clothes</button>
+            <button onClick={() => navigate('/deals')}>Deals</button>
+          </div>
           <button
             onClick={() => navigate('/spending-chart')}
             className="view-spending-chart-btn"
           >
             View Spending Chart
           </button>
+          <br />
           <button
             onClick={() => navigate('/financial-assistant')}
             className="financial-assistant-btn"
