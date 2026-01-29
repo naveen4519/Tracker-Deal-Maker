@@ -25,7 +25,6 @@ function App() {
     setPurchases(prevPurchases => [...prevPurchases, newPurchase]);
   };
 
-  
   return (
     <Router>
       <Routes>
