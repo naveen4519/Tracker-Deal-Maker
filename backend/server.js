@@ -43,6 +43,7 @@ app.use('/clothes', clothesRoute);
 app.use('/deals', dealsRoute);
 app.use('/purchases', purchasesRoute);
 
+
 // Start the Server
 const PORT = 5000;
 app.listen(PORT, () => {
